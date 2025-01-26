@@ -190,6 +190,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/event-stream")
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Header().Set("Connection", "keep-alive")
+		w.Header().Set("X-Accel-Buffering", "no")
+		w.Header().Set("Transfer-Encoding", "chunked")
 	} else {
 		w.Header().Set("Content-Type", "application/json")
 	}
@@ -255,7 +257,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reader := bufio.NewReader(resp.Body)
+	reader := bufio.NewReaderSize(resp.Body, 256)
 	for {
 		line, err := reader.ReadString('\n')
 		if err != nil {
@@ -295,7 +297,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 				respData, _ := json.Marshal(openAIResp)
 				fmt.Fprintf(w, "data: %s\n\n", string(respData))
-				w.(http.Flusher).Flush()
 			}
 		}
 	}
