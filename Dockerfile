@@ -6,5 +6,5 @@ COPY api/ ./api/
 COPY go.mod go.sum ./
 RUN go mod download
 RUN uname -a
-EXPOSE 8080
+EXPOSE 7860
 CMD ["go", "run", "api/chat.go"] 

@@ -339,7 +339,7 @@ func getCurrentTimestamp() int64 {
 }
 
 func main() {
-	port := getEnvOrDefault("PORT", "8080")
+	port := getEnvOrDefault("PORT", "7860")
 	http.HandleFunc("/", Handler)
 	fmt.Printf("Server starting on port %s...\n", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
