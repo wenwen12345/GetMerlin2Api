@@ -186,12 +186,24 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	req.Header.Set("Sec-Fetch-Mode", "cors")
 	req.Header.Set("Sec-Fetch-Dest", "empty")
 	req.Header.Set("host", "arcane.getmerlin.in")
+	var flusher http.Flusher
 	if openAIReq.Stream {
+		var ok bool
+		flusher, ok = w.(http.Flusher)
+		if !ok {
+			http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
+			return
+		}
 		w.Header().Set("Content-Type", "text/event-stream")
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Header().Set("Connection", "keep-alive")
 		w.Header().Set("X-Accel-Buffering", "no")
 		w.Header().Set("Transfer-Encoding", "chunked")
+		defer func() {
+			if flusher != nil {
+				flusher.Flush()
+			}
+		}()
 	} else {
 		w.Header().Set("Content-Type", "application/json")
 	}
@@ -257,7 +269,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reader := bufio.NewReaderSize(resp.Body, 256)
+	reader := bufio.NewReader(resp.Body)
 	for {
 		line, err := reader.ReadString('\n')
 		if err != nil {
@@ -297,6 +309,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 				respData, _ := json.Marshal(openAIResp)
 				fmt.Fprintf(w, "data: %s\n\n", string(respData))
+				flusher.Flush()
 			}
 		}
 	}
@@ -323,6 +336,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	respData, _ := json.Marshal(finalResp)
 	fmt.Fprintf(w, "data: %s\n\n", string(respData))
 	fmt.Fprintf(w, "data: [DONE]\n\n")
+	flusher.Flush()
 }
 
 func generateUUID() string {
