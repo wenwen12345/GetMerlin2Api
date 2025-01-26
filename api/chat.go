@@ -80,7 +80,7 @@ func getToken() (string, error) {
 	tokenReq := struct {
 		UUID string `json:"uuid"`
 	}{
-		UUID: getEnvOrDefault("MERLIN_UUID", ""),
+		UUID: getEnvOrDefault("UUID", ""),
 	}
 
 	tokenReqBody, _ := json.Marshal(tokenReq)
@@ -104,9 +104,9 @@ func getToken() (string, error) {
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	authToken := r.Header.Get("Authorization")
-	expectedToken := "Bearer " + getEnvOrDefault("AUTH_TOKEN", "")
+	envToken := getEnvOrDefault("AUTH_TOKEN", "")
 
-	if expectedToken != "" && authToken != expectedToken {
+	if envToken != "" && authToken != "Bearer "+envToken {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
