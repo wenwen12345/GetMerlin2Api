@@ -4,8 +4,6 @@ WORKDIR /app
 COPY api/ ./api/
 COPY go.mod go.sum ./
 RUN go mod download
-RUN go build -o main ./api
-
+RUN go build -o main ./api && chmod +x main
 EXPOSE 8080
-
 CMD ["./main"] 
