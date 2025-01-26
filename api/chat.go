@@ -302,6 +302,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	finalResp := OpenAIResponse{
+		Id:      generateUUID(),
+		Object:  "chat.completion.chunk",
+		Created: getCurrentTimestamp(),
+		Model:   openAIReq.Model,
 		Choices: []struct {
 			Delta struct {
 				Content string `json:"content"`
@@ -333,8 +337,6 @@ func generateV1UUID() string {
 func getCurrentTimestamp() int64 {
 	return time.Now().Unix()
 }
-<<<<<<< HEAD
-=======
 
 func main() {
 	port := getEnvOrDefault("PORT", "8080")
@@ -344,4 +346,3 @@ func main() {
 		fmt.Printf("Error starting server: %v\n", err)
 	}
 }
->>>>>>> e64d792 (MoLoveSze)
