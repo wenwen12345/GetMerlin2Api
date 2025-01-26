@@ -1,4 +1,4 @@
-package api
+package main
 
 import (
 	"bufio"
@@ -111,7 +111,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.URL.Path != "/v1/chat/completions" {
+	if r.URL.Path != "/hf/v1/chat/completions" {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `{"status":"GetMerlin2Api Service Running...","message":"MoLoveSze..."}`)
