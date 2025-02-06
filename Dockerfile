@@ -1,6 +1,6 @@
 FROM golang:1.23-bullseye
 WORKDIR /app
-ENV UUID=""
+ENV UUID="c3fbed69-22a5-46b7-8721-3afc252d94e3"
 RUN mkdir -p /.cache && \
     chmod -R 777 /.cache
 COPY api/ ./api/
